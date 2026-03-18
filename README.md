@@ -265,6 +265,6 @@ Puis modifier la fonction `main()` pour l'ajouter aux choices.
 
 ---
 
-**Auteur**: AI Assistant  
+**Auteur**: Vanaty & AI Assistant  
 **Date**: 2026-03-18  
 **Version**: 2.0 (OOP Refactor)
