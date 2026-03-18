@@ -1,6 +1,0 @@
-2026/03/18-17:41:04.506 4d24 Reusing MANIFEST D:\scraping\stake\session_data\Default\Local Storage\leveldb/MANIFEST-000001
-2026/03/18-17:41:04.509 4d24 Recovering log #3
-2026/03/18-17:41:04.510 4d24 Reusing old log D:\scraping\stake\session_data\Default\Local Storage\leveldb/000003.log 
-2026/03/18-17:42:04.512 63f4 Level-0 table #5: started
-2026/03/18-17:42:04.540 63f4 Level-0 table #5: 15459 bytes OK
-2026/03/18-17:42:04.542 63f4 Delete type=0 #3
