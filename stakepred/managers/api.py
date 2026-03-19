@@ -166,7 +166,7 @@ class StakeAPIClient:
         """Récupère le solde USDC de l'utilisateur."""
         response = await self.fetch_graphql(
             query="""
-                query UserVaultBalances {
+                query UserBalances {
                     user {
                         id
                         balances {
@@ -183,7 +183,7 @@ class StakeAPIClient:
                 }
             """,
             variables={},
-            operation_name="UserVaultBalances"
+            operation_name="UserBalances"
         )
         
         if response.get('errors'):
