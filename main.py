@@ -112,7 +112,7 @@ async def main():
     
     # Sélectionne la stratégie
     if args.strategy == 'after-below':
-        strategy = BetAfterBelowThresholdStrategy(threshold=args.entry_threshold)
+        strategy = BetAfterBelowThresholdStrategy(threshold=args.entry_threshold, target=args.target_multiplier)
     elif args.strategy == 'low-streak':
         strategy = LowStreakStrategy(
             trigger_threshold=args.trigger_threshold,

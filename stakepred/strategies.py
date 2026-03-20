@@ -32,16 +32,21 @@ class BetAfterBelowThresholdStrategy(Strategy):
       => si le dernier round a crash à 1.00, on parie le round actuel.
     """
 
-    def __init__(self, threshold: float = 1.01) -> None:
+    def __init__(self, threshold: float = 1.01, target: float = 1.09) -> None:
         self.threshold = threshold
+        self.target = target
 
     def should_bet(self, history: list["CrashRound"]) -> bool:
         if not history:
             return False
+        if len(history) >= 2:
+            recent = history[-2:]
+            if all(r.multiplier < self.target + 0.01 for r in recent[-2:]):
+                return True
         return history[-1].multiplier < self.threshold
 
     def get_name(self) -> str:
-        return f"BetAfterBelowThreshold(threshold={self.threshold})"
+        return f"BetAfterBelowThreshold(threshold={self.threshold}, target={self.target})"
 
 
 class LowStreakStrategy(Strategy):
