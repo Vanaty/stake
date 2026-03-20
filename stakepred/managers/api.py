@@ -115,7 +115,7 @@ class StakeAPIClient:
                 const cashoutBtnVisible = Array.from(document.querySelectorAll('button')).some((btn) => {
                     if (!isVisible(btn)) return false;
                     const txt = (btn.innerText || btn.textContent || '').toLowerCase();
-                    return txt.includes('cashout') || txt.includes('encaisser');
+                    return txt.includes('cashout') || txt.includes('encaisser') || txt.includes('retrait');
                 });
 
                 if (cashoutBtnVisible) {
