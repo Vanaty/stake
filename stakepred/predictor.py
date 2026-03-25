@@ -79,8 +79,8 @@ class StakeCrashPredictor:
             logger.debug("Nouveau jeu en cours...")
         
         if status == 'starting' and self.is_betting:
-            await self._place_bet()
             self.is_betting = False
+            await self._place_bet()
 
         elif status == 'crash':
             self.is_predicting = False
