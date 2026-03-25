@@ -148,9 +148,12 @@ class StakeAPIClient:
         """Exécute une requête GraphQL."""
         response = await self.page.evaluate(f"""
             async () => {{
+                // Récupère le token de session depuis les cookies
+                const sessionToken = document.cookie.split('; ').find(row => row.startsWith('session='));
+                const tokenValue = sessionToken ? sessionToken.split('=')[1] : null;
                 const res = await fetch('https://stake.com/_api/graphql', {{
                     method: 'POST',
-                    headers: {{'Content-Type': 'application/json'}},
+                    headers: {{'Content-Type': 'application/json', 'Accept': 'application/json', 'X-Access-Token': tokenValue}},
                     body: JSON.stringify({{
                         query: `{query}`,
                         variables: {json.dumps(variables)},
