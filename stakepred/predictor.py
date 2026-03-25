@@ -44,6 +44,7 @@ class StakeCrashPredictor:
         
         # États
         self.is_predicting = False
+        self.is_betting = False
         self.running = False
 
     async def initialize(self):
@@ -76,6 +77,10 @@ class StakeCrashPredictor:
         if status == 'starting' and not self.is_predicting:
             self.is_predicting = True
             logger.debug("Nouveau jeu en cours...")
+        
+        if status == 'starting' and self.is_betting:
+            await self._place_bet()
+            self.is_betting = False
 
         elif status == 'crash':
             self.is_predicting = False
@@ -96,7 +101,7 @@ class StakeCrashPredictor:
             # Vérifie si on doit parier pour le prochain round
             recent_history = self.game_history.get_recent_rounds(limit=10)
             if self.prediction_engine.should_bet(recent_history):
-                await self._place_bet()
+                self.is_betting = True
 
     async def _place_bet(self):
         """Place un pari selon la configuration."""
