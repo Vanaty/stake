@@ -113,7 +113,7 @@ class StakeCrashPredictor:
             return
 
         amount = self.betting_manager.calculate_next_bet()
-        placed_on_platform, reason = await self.api_client.place_crash_bet(
+        placed_on_platform, reason = await self.api_client.place_crash_bet_api(
             amount=amount,
             cashout_multiplier=self.config.target_multiplier,
         )

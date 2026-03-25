@@ -138,6 +138,45 @@ class StakeAPIClient:
             logger.warning(f"Échec placement pari réel: {message}")
 
         return success, message
+    
+    async def place_crash_bet_api(self, amount: float, cashout_multiplier: float) -> tuple[bool, str]:
+        """Place un pari via l'API GraphQL (si disponible). Retourne (success, message)."""
+        response = await self.fetch_graphql(
+            query="""
+                mutation MultiplayerCrashBet($amount: Float!, $currency: CurrencyEnum!, $cashoutAt: Float!) {
+                    multiplayerCrashBet(amount: $amount, currency: $currency, cashoutAt: $cashoutAt) {
+                        ...MultiplayerCrashBet
+                        user {
+                            id
+                            activeCrashBet {
+                                ...MultiplayerCrashBet
+                            }
+                        }
+                    }
+                }
+                fragment MultiplayerCrashBet on MultiplayerCrashBet {
+                    id
+                    user {
+                        id
+                        name
+                        preferenceHideBets
+                    }
+                    payoutMultiplier
+                    gameId
+                    amount
+                    payout
+                    currency
+                    result
+                    updatedAt
+                    cashoutAt
+                    btcAmount: amount(currency: btc)
+                }
+            """,
+            variables={"amount": amount, "currency": "usdc", "cashoutAt": cashout_multiplier}
+        )
+        if response.get('data'):
+            return True, "Pari placé via API"
+        return False, response.get('errors', [{'message': 'Erreur inconnue'}])[0].get('message', 'Erreur inconnue')
 
     async def fetch_graphql(
         self, 
