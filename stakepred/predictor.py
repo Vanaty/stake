@@ -51,6 +51,8 @@ class StakeCrashPredictor:
     async def initialize(self):
         """Initialise tous les composants."""
         logger.info("Initialisation de l'application...")
+        self.advanced_predictor.load_models()
+        
         await self.browser_manager.initialize()
         self.api_client = StakeAPIClient(self.browser_manager.crash_page)
         
