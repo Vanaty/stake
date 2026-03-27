@@ -26,7 +26,7 @@ class GameHistoryManager:
         """Initialise le fichier d'historique s'il n'existe pas."""
         if not os.path.exists(self.history_file):
             with open(self.history_file, 'w') as f:
-                f.write("game_id,timestamp,multiplier,target\n")  # Crée un fichier vide
+                f.write("timestamp,multiplier,target\n")  # Crée un fichier vide
 
     async def save_round(self, game_id: str, timestamp: str, crashpoint: float, target: float = 2) -> None:
         """Sauvegarde un round dans l'historique."""
@@ -39,7 +39,7 @@ class GameHistoryManager:
             start_time = timestamp
         
         with open(self.history_file, 'a') as f:
-            f.write(f"{game_id},{start_time},{crashpoint},{target}\n")
+            f.write(f"{start_time},{crashpoint},{target}\n")
         
         from ..models import CrashRound
         round_obj = CrashRound(game_id=game_id, timestamp=timestamp, multiplier=crashpoint)
