@@ -8,7 +8,7 @@ from typing import Optional
 
 from .strategies import Strategy
 from .config import BettingConfig
-from .managers import BrowserManager, BettingManager, GameHistoryManager, StakeAPIClient
+from .managers import BrowserManager, BettingManager, GameHistoryManager, StakeAPIClient, AdvancedPredictor
 from .engine import GamePredictionEngine
 from .logger import get_logger
 
@@ -41,6 +41,7 @@ class StakeCrashPredictor:
         self.game_history = GameHistoryManager()
         self.api_client: Optional[StakeAPIClient] = None
         self.prediction_engine = GamePredictionEngine(strategy)
+        self.advanced_predictor = AdvancedPredictor()
         
         # États
         self.is_predicting = False
@@ -77,6 +78,12 @@ class StakeCrashPredictor:
         if status == 'starting' and not self.is_predicting:
             self.is_predicting = True
             logger.debug("Nouveau jeu en cours...")
+            mult = self.advanced_predictor.predict_next_multiplier()
+            risk = self.advanced_predictor.predict_next_safety()
+            if mult is not None:
+                logger.info(f"Prédiction du prochain crash: {mult:.2f}x")
+                logger.info(f"Niveau de risque: {risk * 100:.1f}% de sécurité")
+            
         
         if status == 'starting' and self.is_placing_betting:
             self.is_placing_betting = False
@@ -89,8 +96,11 @@ class StakeCrashPredictor:
             
             # Sauvegarde le round
             await self.game_history.save_round(game_id, timestamp, crashpoint)
+            self.advanced_predictor.add_round(crashpoint)
             logger.info(f"Crash point réel: {crashpoint}x")
             
+            task = asyncio.to_thread(self.advanced_predictor.auto_train_if_needed)
+
             # Résout le pari précédent s'il y en a un
             if self.betting_manager.is_betting:
                 if crashpoint >= self.config.target_multiplier:
@@ -99,9 +109,11 @@ class StakeCrashPredictor:
                     self.betting_manager.resolve_loss()
             
             # Vérifie si on doit parier pour le prochain round
-            recent_history = self.game_history.get_recent_rounds(limit=10)
+            recent_history = self.game_history.get_recent_rounds(limit=20)
             if self.prediction_engine.should_bet(recent_history):
                 self.is_placing_betting = True
+            
+            await task  # Attend la fin de l'entraînement automatique si lancé
 
     async def _place_bet(self):
         """Place un pari selon la configuration."""

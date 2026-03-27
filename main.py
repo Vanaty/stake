@@ -14,6 +14,7 @@ from stakepred import (
     LowStreakStrategy,
     HighAfterLowStrategy,
 )
+from stakepred.strategies import DefaultStrategy
 
 
 async def main():
@@ -24,9 +25,9 @@ async def main():
     )
     parser.add_argument(
         '--strategy',
-        choices=['after-below', 'low-streak', 'high-after-low'],
-        default='after-below',
-        help='Stratégie de pari à utiliser (défaut: after-below)'
+        choices=['after-below', 'low-streak', 'high-after-low', 'default'],
+        default='default',
+        help='Stratégie de pari à utiliser (défaut: default (ne parie jamais))'
     )
     parser.add_argument(
         '--initial-balance',
@@ -118,6 +119,8 @@ async def main():
             trigger_threshold=args.trigger_threshold,
             trigger_streak=args.trigger_streak
         )
+    elif args.strategy == 'default':
+        strategy = DefaultStrategy()
     else:  # high-after-low
         strategy = HighAfterLowStrategy()
     

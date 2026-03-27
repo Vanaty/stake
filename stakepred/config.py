@@ -13,3 +13,8 @@ class BettingConfig:
     base_bet: float = 1.0
     martingale_multiplier: float = 11.65
     max_martingale_steps: int = 3
+
+@dataclass
+class PredictorConfig:
+    """Configuration pour le moteur de prédiction."""
+    prediction_threshold: float = 0.5  # Seuil de confiance pour parier

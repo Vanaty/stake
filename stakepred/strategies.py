@@ -22,6 +22,14 @@ class Strategy(ABC):
         """Retourne le nom de la stratégie."""
         pass
 
+class DefaultStrategy(Strategy):
+    """Stratégie par défaut qui ne parie jamais."""
+
+    def should_bet(self, history: list["CrashRound"]) -> bool:
+        return False
+
+    def get_name(self) -> str:
+        return "DefaultStrategy"
 
 class BetAfterBelowThresholdStrategy(Strategy):
     """

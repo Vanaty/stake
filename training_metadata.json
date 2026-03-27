@@ -1,0 +1,17 @@
+{
+  "trained_at": "2026-03-27T14:27:52.815475+00:00",
+  "csv_path": "D:\\scraping\\stake\\crash_history.csv",
+  "model_classification": "D:\\scraping\\stake\\models\\clf_model.joblib",
+  "model_regression": "D:\\scraping\\stake\\models\\reg_model.joblib",
+  "target": 2.0,
+  "n_lags": 20,
+  "alpha": 0.3,
+  "weight_type": "linear",
+  "min_rows": 150,
+  "metrics": {
+    "accuracy": 0.5070517125587642,
+    "log_loss": 0.6948835151906887,
+    "mse": 1870.2780274249528,
+    "n_samples": 7443
+  }
+}

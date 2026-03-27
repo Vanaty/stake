@@ -21,6 +21,7 @@ from .managers import (
     BettingManager,
     BrowserManager,
     GameHistoryManager,
+    AdvancedPredictor,
 )
 
 __version__ = "2.0.0"
@@ -48,6 +49,7 @@ __all__ = [
     "BettingManager",
     "BrowserManager",
     "GameHistoryManager",
+    "AdvancedPredictor",
     
     # Utilities
     "get_logger",

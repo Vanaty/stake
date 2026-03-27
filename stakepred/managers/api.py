@@ -83,7 +83,7 @@ class StakeAPIClient:
                 }
 
                 amountInput.focus();
-                setInputValue(amountInput, amount.toFixed(8).replace(/0+$/, '').replace(/\.$/, ''));
+                setInputValue(amountInput, amount.toFixed(8).replace(/0+$/, '').replace(/\\.$/, ''));
 
                 if (autoCashoutInput) {
                     autoCashoutInput.focus();

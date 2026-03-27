@@ -70,6 +70,10 @@ class BetAfterBelowThresholdStrategy(Strategy):
     def should_bet(self, history: list[CrashRound]) -> bool:
         if not history:
             return False
+        if len(history) >= 2:
+            recent = history[-2:]
+            if all(r.multiplier < 1.1 for r in recent[-2:]):
+                return True
         return history[-1].multiplier < self.threshold
 
 
@@ -91,7 +95,28 @@ class LowStreakStrategy(Strategy):
             return False
         recent = history[-self.trigger_streak :]
         return all(r.multiplier <= self.trigger_threshold for r in recent)
+        
 
+class CompressionExplosionStrategy(Strategy):
+    def __init__(self, threshold=1.8, streak=5):
+        self.threshold = threshold
+        self.streak = streak
+
+    def should_bet(self, history):
+        if len(history) < self.streak:
+            return False
+        
+        recent = history[-self.streak:]
+        avg = sum(r.multiplier for r in recent) / len(recent)
+
+        return all(r.multiplier <= self.threshold for r in recent) or avg < 1.7
+
+class MartingaleStrategy(Strategy):
+    def __init__(self):
+        super().__init__()
+    
+    def should_bet(self, history):
+        return True  # Parie à chaque round, la logique de martingale est gérée dans le BackTester
 
 class BackTester:
     def __init__(
@@ -126,8 +151,19 @@ class BackTester:
         martingale_step = 0
         history: list[CrashRound] = [] 
 
+        print_next_round = False
         for current_round in self.rounds:
             should_bet = self.strategy.should_bet(history)
+            if print_next_round:
+                print("Next\t", current_round.multiplier, '\n')
+            if current_round.multiplier < 1.01:
+                print("Round\t", current_round.multiplier)
+                print_next_round = True
+            elif current_round.multiplier < 1.09 and print_next_round:
+                print("Next\t", current_round.multiplier)
+            else:
+                print_next_round = False
+
 
             if should_bet and bankroll > 0:
                 stake = self.base_bet * (self.martingale_multiplier ** martingale_step)
@@ -146,7 +182,6 @@ class BackTester:
                         martingale_step += 1
                         if martingale_step > self.max_martingale_steps:
                             martingale_step = 0
-
                     profits.append(profit)
                     profit_curve.append(bankroll)
                     peak_bankroll = max(peak_bankroll, bankroll)
@@ -209,7 +244,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--strategy",
-        choices=["after-below", "low-streak"],
+        choices=["after-below", "low-streak", "compression-explosion", "martingale"],
         default="after-below",
         help="Type de stratégie (défaut: after-below)",
     )
@@ -285,6 +320,13 @@ def main() -> None:
 
     if args.strategy == "after-below":
         strategy = BetAfterBelowThresholdStrategy(threshold=args.entry_threshold)
+    elif args.strategy == "compression-explosion":
+        strategy = CompressionExplosionStrategy(
+            threshold=args.entry_threshold,
+            streak=args.trigger_streak
+        )
+    elif args.strategy == "martingale":
+        strategy = MartingaleStrategy()
     else:
         strategy = LowStreakStrategy(
             trigger_threshold=args.trigger_threshold,
