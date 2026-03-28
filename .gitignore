@@ -183,3 +183,5 @@ session_data/
 *.csv
 crash_history.csv
 *.csv
+tk*.py
+catboost_info/
